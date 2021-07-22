@@ -1,0 +1,4 @@
+token
+ODY3NDI4MzA3MTg4MTg3MTQ3.YPg9kA.eHpn7Ta8yBBGsihAnYu9AhCJ850
+invt link
+https://discord.com/api/oauth2/authorize?client_id=867428307188187147&permissions=8&scope=bot
