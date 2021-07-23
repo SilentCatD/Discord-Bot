@@ -33,7 +33,7 @@ class Admin(commands.Cog):
         member_name, member_discriminator = member.split('#')
         for ban_entry in banned_users:
             user = ban_entry.user
-            if(user.name, user.discriminator) == (member_name, member_discriminator):
+            if (user.name, user.discriminator) == (member_name, member_discriminator):
                 await ctx.guild.unban(user)
                 await ctx.send(f'Unbanned {user.mention}')
                 return
@@ -71,6 +71,7 @@ class Admin(commands.Cog):
             await ctx.send(f'Change prefix to what?')
         if isinstance(error, commands.CommandInvokeError):
             await ctx.send(f'Use 1 character to prefix please!')
+
 
 def setup(client):
     client.add_cog(Admin(client))

@@ -1,15 +1,5 @@
-import datetime
-
-def time_in_range(start, end, x):
-    """Return true if x is in the range [start, end]"""
-    if start <= end:
-        return start <= x <= end
-    else:
-        return start <= x or x <= end
-
-
-start = datetime.time(21, 0, 0)
-print(start)
-end = datetime.time(7, 0, 0)
-now = datetime.datetime.now().time().replace(hour=22)
-print(time_in_range(start, end, now))
+import requests
+API_key = 'd715f170763664cefb4ba83e161e58f9'
+city_name = 'Ho Chi Minh'
+response = requests.get('https://api.covid19api.com/summary')
+print(response.json())
