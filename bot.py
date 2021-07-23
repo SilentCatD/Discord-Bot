@@ -1,92 +1,71 @@
-from discord.ext import commands
-from discord import embeds, colour
+import os
 import dotenv
-import random
-from hentai import *
+import discord
+from discord.ext import commands
 
 dotenv.load_dotenv('.env')
 TOKEN = os.getenv('TOKEN')
-bot = commands.Bot(command_prefix="!")
+client = commands.Bot(command_prefix='!')
 
 
-def get_hen_by_id(ctx, hen_id):
-    doujin = Hentai(hen_id)
-    hen_id = str(hen_id)
-    hen_id = hen_id.zfill(6)
-    tags = "Not found"
-    lang = "Not found"
-    author = "Not found"
-    chars = "Not found"
-    if len(doujin.tag) != 0:
-        temp = [_.name for _ in doujin.tag]
-        tags = ", ".join(temp)
-    if len(doujin.language) != 0:
-        lang = doujin.language[0].name
-    if len(doujin.artist) != 0:
-        author = doujin.artist[0].name
-    if len(doujin.character) != 0:
-        temp = []
-        for _ in doujin.character:
-            temp.append(_.name)
-        chars = " ,".join(temp)
-    embed = embeds.Embed(title=doujin.title(Format.Pretty), url=doujin.url, colour=colour.Colour.blue())
-    embed.set_thumbnail(url=doujin.cover)
-    embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
-    embed.add_field(name="**Language :**", value=lang, inline=False)
-    embed.add_field(name="**Tags :**", value=tags, inline=False)
-    embed.add_field(name="**Characters :**", value=chars, inline=False)
-    embed.add_field(name="**Artist: **", value=author, inline=False)
-    embed.set_footer(text=f'nHentai code is: {hen_id}')
-    return embed
+@client.command()
+async def load(ctx, extension):
+    client.load_extension(f'cogs.{extension}')
+    await ctx.send(f'{extension} loaded!')
 
 
-@bot.command(name='hen')
-async def get_hen(ctx, *query):
-    if len(query) == 0:
-        while True:
-            hen_id = Utils.get_random_id()
-            if Hentai.exists(hen_id):
-                break
-        await ctx.send(f'{ctx.author.mention} Here you go, a random hentai!', embed=get_hen_by_id(ctx, hen_id))
-
-    elif len(query) == 1 and str(query[0]).isdigit():
-        query = "".join(query)
-        hen_id = int(query)
-        if Hentai.exists(hen_id):
-            await ctx.send(f'{ctx.author.mention} Here you go, a hentai with code {query}!', embed=get_hen_by_id(ctx, hen_id))
-        else:
-            await ctx.send(f'{ctx.author.mention} Not found! Check your code again please!')
-    else:
-        query = " ".join(query)
-        print(query)
-        list_hen = []
-        for hen in Utils.search_by_query(f'{query}', sort=Sort.PopularWeek):
-            list_hen.append(hen.id)
-        if len(list_hen) != 0:
-            hen_id = random.choice(list_hen)
-            await ctx.send(f'{ctx.author.mention} Here you go, search result of "{query}"!', embed=get_hen_by_id(ctx, hen_id))
-        else:
-            await ctx.send(f'{ctx.author.mention} Not found! Check your name again please!')
+@load.error
+async def load_error(ctx, error):
+    if isinstance(error, commands.CommandInvokeError):
+        await ctx.send('Unable to load cogs! Maybe it does not exist?')
 
 
-@bot.event
-async def on_ready():
-    print(f'{bot.user.name} has connected to Discord!')
+@client.command()
+async def unload(ctx, extension):
+    client.unload_extension(f'cogs.{extension}')
+    await ctx.send(f'{extension} unloaded!')
 
 
-@bot.event
-async def on_command_error(ctx, error):
-    await ctx.send(f'{ctx.author.mention} No such command!')
-"""
-@bot.command(name='play')
-async def join(ctx):
-    channel = ctx.author.voice.channel
-    await channel.connect()
+@unload.error
+async def unload_error(ctx, error):
+    if isinstance(error, commands.CommandInvokeError):
+        await ctx.send('Unable to unload cogs! Maybe it does not exist?')
 
 
-@bot.command(name='leave')
-async def leave(ctx):
-    await ctx.voice_client.disconnect()
-"""
+@client.command()
+async def reload(ctx, extension):
+    client.unload_extension(f'cogs.{extension}')
+    client.load_extension(f'cogs.{extension}')
+    await ctx.send(f'{extension} reloaded!')
 
-bot.run(TOKEN)
+
+@reload.error
+async def reload_error(ctx, error):
+    if isinstance(error, commands.CommandInvokeError):
+        await ctx.send('Unable to reload cogs! Maybe it does not exist?')
+
+
+@client.command()
+async def reload_all(ctx):
+    for _filename in os.listdir('./cogs'):
+        if _filename.endswith('.py'):
+            client.unload_extension(f'cogs.{_filename[:-3]}')
+            client.load_extension(f'cogs.{_filename[:-3]}')
+            await ctx.send(f'{_filename[:-3]} reloaded!')
+
+
+@reload_all.error
+async def reload_all_error(ctx, error):
+    if isinstance(error, commands.CommandInvokeError):
+        await ctx.send('Unable to reload all cogs! Maybe some cog does not exist?')
+
+
+def setup():
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            client.load_extension(f'cogs.{filename[:-3]}')
+            print(f'{filename[:-3]} loaded!')
+
+
+setup()
+client.run(TOKEN)
