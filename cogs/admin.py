@@ -1,3 +1,4 @@
+import json
 import discord
 from discord.ext import commands
 
@@ -53,6 +54,23 @@ class Admin(commands.Cog):
         if isinstance(error, commands.CommandInvokeError):
             await ctx.send("Can't delete more than 100 messages at the same time!")
 
+    @commands.command()
+    async def change_prefix(self, ctx, prefix: str):
+        if len(prefix) > 1:
+            raise ValueError("Use 1 character to prefix please!")
+        with open('./db/prefixes.json', 'r') as f:
+            prefixes = json.load(f)
+        prefixes[str(ctx.guild.id)] = prefix
+        with open('./db/prefixes.json', 'w') as f:
+            json.dump(prefixes, f, indent=4)
+        await ctx.send(f'Prefix changed to \'{prefix}\'')
+
+    @change_prefix.error
+    async def change_prefix_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f'Change prefix to what?')
+        if isinstance(error, commands.CommandInvokeError):
+            await ctx.send(f'Use 1 character to prefix please!')
 
 def setup(client):
     client.add_cog(Admin(client))

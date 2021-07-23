@@ -1,3 +1,4 @@
+import json
 import os
 import dotenv
 import discord
@@ -5,7 +6,31 @@ from discord.ext import commands
 
 dotenv.load_dotenv('.env')
 TOKEN = os.getenv('TOKEN')
-client = commands.Bot(command_prefix='!')
+
+
+def get_prefix(client, message):
+    default_pre = '!'
+    try:
+        with open('./db/prefixes.json', 'r') as f:
+            prefixes = json.load(f)
+        prefix = prefixes[str(message.guild.id)]
+        return commands.when_mentioned_or(*prefix)(client, message)
+
+    except KeyError:
+        print(f'Guild \'{message.guild.id}\' not have available prefix! Set it to default prefix \'{default_pre}\'...')
+        with open('./db/prefixes.json', 'r') as f:
+            prefixes = json.load(f)
+        prefixes[str(message.guild.id)] = default_pre
+        with open('./db/prefixes.json', 'w') as f:
+            json.dump(prefixes, f, indent=4)
+        with open('./db/prefixes.json', 'r') as f:
+            prefixes = json.load(f)
+        return prefixes[str(message.guild.id)]
+    except:
+        return default_pre
+
+
+client = commands.Bot(command_prefix=get_prefix)
 
 
 @client.command()
@@ -64,7 +89,7 @@ def setup():
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{filename[:-3]}')
-            print(f'{filename[:-3]} loaded!')
+            print(f'Cog {filename[:-3]} loaded!')
 
 
 setup()
