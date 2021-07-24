@@ -29,7 +29,7 @@ def get_hen_by_id(ctx, hen_id):
         title = doujin.json['title']['english']
     except KeyError:
         title = doujin.title()
-    embed = embeds.Embed(title=title, url=doujin.url, colour=colour.Colour.blue())
+    embed = embeds.Embed(title=title, url=doujin.url, colour=colour.Colour.blue(), timestamp=ctx.message.created_at)
     embed.set_thumbnail(url=doujin.cover)
     embed.add_field(name="**CODE :**", value=hen_id)
     embed.add_field(name="**Language :**", value=lang, inline=True)

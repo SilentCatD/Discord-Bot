@@ -15,7 +15,7 @@ class SmallAPI(commands.Cog):
         thump_url = 'https://disease.sh/assets/img/flags/vn.png'
         async with ctx.message.channel.typing():
             embed = Embed(title='COVID-19', description="Covid information",
-                          colour=discord.Color.blue())
+                          colour=discord.Color.blue(), timestamp=ctx.message.created_at)
             embed.set_thumbnail(url=thump_url)
             embed.add_field(name="Global", value=f'Today Case: {data["todayCases"]}'
                                                  f' | Total Case: {data["cases"]}\n'
@@ -71,6 +71,20 @@ class SmallAPI(commands.Cog):
         else:
             await channel.send("City not found.")
 
+    @commands.command()
+    async def quote(self, ctx):
+        url = 'https://zenquotes.io/api/random'
+        response = requests.get(url)
+        response = response.json()
+        thumbnail_url = "https://cdn.browsercam.com/logos/com.kaydownes.ZenQuotes-logo.png"
+        async with ctx.message.channel.typing():
+            embed = discord.Embed(title=f"",
+                                  color=ctx.guild.me.top_role.color,
+                                  timestamp=ctx.message.created_at, description=f'***{response[0]["q"]}***')
+            embed.set_thumbnail(url=thumbnail_url)
+            embed.set_author(name=f'{response[0]["a"]} used to say')
+            embed.set_footer(text=f"Requested by {ctx.author.name}")
+        await ctx.send(embed=embed)
 
 def setup(client):
     client.add_cog(SmallAPI(client))
