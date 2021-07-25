@@ -60,12 +60,12 @@ class General(commands.Cog):
         self.change_activity.start()
         self.change_status.start()
 
-    #@commands.Cog.listener()
-    #async def on_command_error(self, ctx, error):
-        #if isinstance(error, commands.CommandNotFound):
-            #await ctx.send("No such command!")
-        #else:
-            #print(error)
+    # @commands.Cog.listener()
+    # async def on_command_error(self, ctx, error):
+    # if isinstance(error, commands.CommandNotFound):
+    # await ctx.send("No such command!")
+    # else:
+    # print(error)
 
     @tasks.loop(minutes=60)
     async def change_activity(self):
@@ -102,6 +102,7 @@ class General(commands.Cog):
         with open('./db/prefixes.json', 'w') as f:
             json.dump(prefixes, f, indent=4)
         print(f'Guild\'s prefix deleted')
+
 
 def setup(client):
     client.add_cog(General(client))
