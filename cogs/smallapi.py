@@ -9,34 +9,6 @@ class SmallAPI(commands.Cog):
         self.client = client
 
     @commands.command()
-    async def covid(self, ctx):
-        response = requests.get('https://corona.lmao.ninja/v3/covid-19/all')
-        data = response.json()
-        thump_url = 'https://disease.sh/assets/img/flags/vn.png'
-        async with ctx.message.channel.typing():
-            embed = Embed(title='COVID-19', description="Covid information",
-                          colour=discord.Color.blue(), timestamp=ctx.message.created_at)
-            embed.set_thumbnail(url=thump_url)
-            embed.add_field(name="Global", value=f'Today Case: {data["todayCases"]}'
-                                                 f' | Total Case: {data["cases"]}\n'
-                                                 f'Today Deaths:  {data["todayDeaths"]}'
-                                                 f' | Total Deaths {data["deaths"]}\n'
-                                                 f'Today recovered: {data["todayRecovered"]}'
-                                                 f' | Total recovered: {data["recovered"]}',
-                            inline=False)
-            response = requests.get("https://corona.lmao.ninja/v3/covid-19/countries/vn?strict=true")
-            data = response.json()
-            embed.add_field(name="Viet Nam", value=f'Today Case: {data["todayCases"]}'
-                                                   f' | Total Case: {data["cases"]}\n'
-                                                   f'Today Deaths:  {data["todayDeaths"]}'
-                                                   f' | Total Deaths {data["deaths"]}\n'
-                                                   f'Today recovered: {data["todayRecovered"]}'
-                                                   f' | Total recovered: {data["recovered"]}',
-                            inline=False)
-            embed.set_footer(text=f"Requested by {ctx.author.name}")
-        await ctx.send(embed=embed)
-
-    @commands.command()
     async def weather(self, ctx, *, city: str = ""):
         if city == "":
             await ctx.send(f'Specify a city please!')
