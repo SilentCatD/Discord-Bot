@@ -86,5 +86,6 @@ class SmallAPI(commands.Cog):
             embed.set_footer(text=f"Requested by {ctx.author.name}")
         await ctx.send(embed=embed)
 
+
 def setup(client):
     client.add_cog(SmallAPI(client))

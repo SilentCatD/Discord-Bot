@@ -103,6 +103,5 @@ class General(commands.Cog):
             json.dump(prefixes, f, indent=4)
         print(f'Guild\'s prefix deleted')
 
-
 def setup(client):
     client.add_cog(General(client))
