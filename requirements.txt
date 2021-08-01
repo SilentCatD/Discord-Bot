@@ -1,0 +1,4 @@
+discord.py[voice]
+discord.py
+wavelink~=0.9.10
+python-dotenv~=0.19.0

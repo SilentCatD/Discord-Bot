@@ -1,17 +1,17 @@
-import praw
+class MyQueue:
+    def __init__(self):
+        self._queue = []
 
-reddit = praw.Reddit(
-    client_id="HBtFanSntocxgSWJT8KnXA",
-    client_secret="rYWaEamC6Y8fZ96WUvuzB0peSZ3CuA",
-    user_agent="discord:angry-cat:1.0",
-)
+    def add(self, n):
+        self._queue.append(n)
 
-title = "Not found"
-url = ""
-for submission in reddit.subreddit("aww").new(limit=None):
-    if submission.url.endswith(('.jpg', '.png', '.gif', '.jpeg')):
-        url = submission.url
-        title = submission.title
-        print(url)
-        print(title)
-        break
+    def get(self):
+        return self._queue
+
+
+mq = MyQueue()
+mq2 = MyQueue()
+print(mq.get())
+mq.add(1)
+print(mq2.get())
+print(mq.get())
